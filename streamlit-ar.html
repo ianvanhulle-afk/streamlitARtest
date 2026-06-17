@@ -171,14 +171,14 @@
     const xrCanvas = document.getElementById('xr-canvas');
     let xrSession = null;
 
-    async function checkSupport() {
-      if (!navigator.xr) { setStatus('WebXR is not available in this browser.', true); enterBtn.disabled = true; return; }
-      try {
-        const supported = await navigator.xr.isSessionSupported('immersive-ar');
-        if (supported) { setStatus('Ready — tap Enter AR to begin.'); }
-        else { setStatus('immersive-ar not supported on this device.', true); enterBtn.disabled = true; }
-      } catch (e) { setStatus('Could not query AR support: ' + e.message, true); enterBtn.disabled = true; }
+  async function checkSupport() {
+    if (!navigator.xr) {
+      setStatus('WebXR not available.', true);
+      enterBtn.disabled = true;
+      return;
     }
+    setStatus('Ready — tap Enter AR to begin.');
+  }
 
     async function startAR() {
       const url = urlInput.value.trim();
