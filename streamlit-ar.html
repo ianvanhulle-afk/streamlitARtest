@@ -30,7 +30,7 @@
       msg('Starting...');
       try {
         session = await navigator.xr.requestSession('immersive-ar', {
-          requiredFeatures: ['dom-overlay'],
+          optionalFeatures: ['dom-overlay'],
           domOverlay: { root: document.getElementById('overlay') }
         });
         const gl = document.getElementById('c').getContext('webgl', { xrCompatible: true });
