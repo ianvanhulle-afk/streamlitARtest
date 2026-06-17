@@ -8,21 +8,49 @@
     body { margin:0; background:#000; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; }
     #btn { padding:20px 40px; font-size:24px; background:#7c3aed; color:#fff; border:none; border-radius:16px; cursor:pointer; }
     #msg { position:fixed; bottom:20px; left:0; right:0; text-align:center; color:#fff; font-size:16px; }
-    #overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); }
-    #overlay iframe { width:100%; height:100%; border:none; }
-    #exit { position:fixed; top:10px; right:10px; z-index:999; padding:10px 20px; background:red; color:#fff; border:none; border-radius:8px; font-size:16px; cursor:pointer; }
+    #overlay {
+      display:block;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.3);
+    }
+    #overlay iframe {
+      width:100%;
+      height:100%;
+      border:none;
+      background:white;
+    }
+    #exit {
+      position:fixed;
+      top:10px;
+      right:10px;
+      z-index:999;
+      padding:10px 20px;
+      background:red;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+      cursor:pointer;
+    }
   </style>
 </head>
 <body>
   <button id="btn" onclick="startAR()">▶ Enter AR</button>
   <div id="msg">Tap Enter AR</div>
+
   <div id="overlay">
     <button id="exit" onclick="stopAR()">✕ Exit</button>
-    <iframe src="https://appartest-aa7d6cjghdbhkcujttgrza.streamlit.app/"></iframe>
+    <iframe src="https://appartest-aa7d6cjghdbhkcujttgrza.streamlit.app/" style="background:white"></iframe>
   </div>
+
   <canvas id="c" style="display:none"></canvas>
+
   <script>
     let session = null;
+
+    // Hide overlay until AR starts
+    document.getElementById('overlay').style.display = 'none';
 
     function msg(t) { document.getElementById('msg').textContent = t; }
 
@@ -33,19 +61,24 @@
           optionalFeatures: ['dom-overlay'],
           domOverlay: { root: document.getElementById('overlay') }
         });
+
         const gl = document.getElementById('c').getContext('webgl', { xrCompatible: true });
         await session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
         await session.requestReferenceSpace('local');
+
         (function frame() {
           session.requestAnimationFrame(frame);
           gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
-          gl.clearColor(0,0,0,0);
+          gl.clearColor(0, 0, 0, 0);
           gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         })();
+
+        // Show overlay
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('btn').style.display = 'none';
         session.addEventListener('end', stopAR);
         msg('AR active');
+
       } catch(e) {
         msg('Error: ' + e.message);
       }
